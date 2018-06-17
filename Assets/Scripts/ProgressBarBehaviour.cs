@@ -10,7 +10,7 @@ public class ProgressBarBehaviour : MonoBehaviour {
 
 	public void updateProfile() 
 	{
-		float percentage = selector.profiles [selector.selected].completion;
+        float percentage = 0;//selector.profiles [selector.selected].completion;
 		progressImage.fillAmount = percentage;
 		percentageText.text = Mathf.Round(percentage * 100) + "%";
 	}

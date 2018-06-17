@@ -135,7 +135,8 @@ public class LoginManager : MonoBehaviour {
             PlayerPrefs.SetString("password", "");
         }
 
-        profileSelector.StartCoroutine(profileSelector.loadUsers(parentID));
+        profileSelector.parentID = parentID;
+        profileSelector.loadUsers();
 
         // load profiles in profileselector
 

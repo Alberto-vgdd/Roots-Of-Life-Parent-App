@@ -7,23 +7,15 @@ public class Profile : Object {
     public string name;
     public bool active = false;
     public Image image;
-	public int progress;
-	public float completion;
-	public int playtime;
-	public int openings;
-	public int deathcount;
+    public int lastlogin;
 
-	public Profile(string name, Image image, int progress, float completion, int playtime, int openings, int deathcount)
+	public Profile(string name, Image image, int lastlogin)
     {
         this.name = name;
         this.image = image;
         this.image.name = name;
         this.image.rectTransform.anchoredPosition = new Vector2(0, 0);
-		this.progress = progress;
-		this.completion = completion;
-		this.playtime = playtime;
-		this.openings = openings;
-		this.deathcount = deathcount;
+        this.lastlogin = lastlogin;
     }
 
 }

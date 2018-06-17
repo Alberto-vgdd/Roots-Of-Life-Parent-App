@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -7,12 +8,14 @@ using UnityEngine.Events;
 public class ProfileSelector : MonoBehaviour {
     public Text playerName;
     public Text playerStatus;
+    public Text lastLogin;
 	public GameObject content;
 	public GameObject profileTemplate;
     public GameObject addButton;
 
 	public UnityEvent onSelectNewProfile;
 
+    public int parentID;
 	public List<Profile> profiles;
     public float profileWidth;
     public int selected;
@@ -39,7 +42,12 @@ public class ProfileSelector : MonoBehaviour {
         playerStatus.text = "Status:";
     }
 
-    public IEnumerator loadUsers(int parentID)
+    public void loadUsers()
+    {
+        StartCoroutine(userForm());
+    }
+
+    public IEnumerator userForm()
     {
         addButton.SetActive(false);
 
@@ -66,13 +74,10 @@ public class ProfileSelector : MonoBehaviour {
             foreach (string data in usersData)
             {
                 string name = data.Split(',')[0];
-                //float completion = float.Parse (data.Split(',') [3]);
-                //int playtime = int.Parse (data.Split(',') [4]);
-                //int openings = int.Parse (data.Split (',') [5]);
-                //int deathcount = int.Parse (data.Split (',') [6]);
+                int lastlogin = int.Parse(data.Split(',')[2]);
                 Image image = Instantiate(profileTemplate).GetComponent<Image>();
                 image.transform.SetParent(content.transform, false);
-                Profile p = new Profile(name, image, 0, 0, 0, 0, 0);
+                Profile p = new Profile(name, image, lastlogin);
                 if (data.Split(',')[1] == "1")
                     p.active = true;
                 profiles.Add(p);
@@ -172,10 +177,25 @@ public class ProfileSelector : MonoBehaviour {
         selected = profile;
         playerName.text = profiles[selected].name;
         if (profiles[selected].active)
+        {
             playerStatus.text = "Status: Playing";
+            lastLogin.text = "Logged in:";
+        }
         else
+        {
             playerStatus.text = "Status: Offline";
+            lastLogin.text = "Last seen:";
+        }
+        lastLogin.transform.GetChild(0).GetComponent<Text>().text = getTimeString(profiles[selected].lastlogin);
         onSelectNewProfile.Invoke ();
+    }
+
+    private string getTimeString(int unixTime)
+    {
+        DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+        time = time.AddSeconds(unixTime).ToLocalTime();
+        Debug.Log(time.ToString());
+        return time.ToString().Split(' ')[1] + "\n" + time.ToString().Split(' ')[0];
     }
 
 	// Return the profile instance of the selected user
