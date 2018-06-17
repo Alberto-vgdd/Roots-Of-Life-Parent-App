@@ -29,13 +29,12 @@ public class AddUser : MonoBehaviour
 
         int parentID = loginManager.getParentID();
         StartCoroutine(form(nameInput.text, parentID));
-        profileSelector.StartCoroutine(profileSelector.loadUsers(parentID));
+        profileSelector.loadUsers();
         gameObject.SetActive(false);
     }
 
     IEnumerator form(string username, int parentid)
     {
-        Debug.Log("test");
         WWWForm form = new WWWForm();
         form.AddField("setUsername", username);
         form.AddField("setParentID", parentid);
