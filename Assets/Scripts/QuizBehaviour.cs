@@ -70,7 +70,8 @@ public class QuizBehaviour : MonoBehaviour {
                 questionN++;
 				if (questionN >= questions.Count)
 				{
-					flagCommunicator.setFlag (1);
+					if (flagCommunicator != null)
+						flagCommunicator.setFlag (1);
 					gameObject.SetActive (false);
 					questionN = 0;
 				}
