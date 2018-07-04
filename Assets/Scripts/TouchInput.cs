@@ -7,8 +7,11 @@ using UnityEngine.Events;
 
 public class TouchInput : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler {
 
-    public MenuBehaviour menuBehaviour;
-    public SnapscrollBehaviour snapscrollBehaviour;
+	public UnityEvent up;
+	public UnityEvent down;
+	public UnityEvent left;
+	public UnityEvent right;
+	public UnityEvent press;
 
     public enum Touch {
         none,
@@ -19,14 +22,8 @@ public class TouchInput : MonoBehaviour, IDragHandler, IPointerDownHandler, IPoi
         right,
     }
     
-    public Touch touch;
-    public float touchTime;
-
-	public UnityEvent up;
-	public UnityEvent down;
-	public UnityEvent left;
-	public UnityEvent right;
-	public UnityEvent press;
+    private Touch touch;
+	private float touchTime;
 
     void Update() {
         if (touch == Touch.none)
