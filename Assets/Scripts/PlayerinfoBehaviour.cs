@@ -4,20 +4,27 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerinfoBehaviour : MonoBehaviour {
-	public LockscreenBehaviour lockscreen;
-	public GameObject lastSeen;
+	public Scrollbar scrollbar;
+    public ProfileSelector selector;
+    public Text lastLogin;
+	private float defaulty;
+
+	void Start() 
+	{
+		defaulty = gameObject.GetComponent<RectTransform> ().anchoredPosition.y;
+	}
 	
 	// Update is called once per frame
 	void Update () {
-		calc ();
 	}
 
-	public void calc() {
-		RectTransform rT = GetComponent<RectTransform> ();
-		rT.anchorMax = new Vector2 (0.5f, Mathf.Lerp (0.4f, 1f, lockscreen.scroll));
-		rT.anchorMin = new Vector2 (0.5f, Mathf.Lerp (0.4f, 1f, lockscreen.scroll));
-		rT.anchoredPosition = new Vector2 (0, Mathf.Lerp(0, -100, lockscreen.scroll));
-		foreach (Text t in lastSeen.GetComponentsInChildren<Text>())
-			t.CrossFadeAlpha (1 - (lockscreen.scroll * 2), 0.0f, false);
-	}
+	public void move() 
+	{
+		Vector2 position = gameObject.GetComponent<RectTransform> ().anchoredPosition;
+		position.y = defaulty + -820 * (scrollbar.value * -1 + 1);
+		gameObject.GetComponent<RectTransform> ().anchoredPosition = position;
+
+        lastLogin.CrossFadeAlpha(-1 + (scrollbar.value * 2), 0.0f, false);
+        lastLogin.transform.GetChild(0).GetComponent<Text>().CrossFadeAlpha(-1 + (scrollbar.value * 2), 0.0f, false);
+    }
 }
