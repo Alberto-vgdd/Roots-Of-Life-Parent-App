@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class TouchInput : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler {
 
-    public MenuBehaviour menuBehaviour;
-    public SnapscrollBehaviour snapscrollBehaviour;
+	public UnityEvent up;
+	public UnityEvent down;
+	public UnityEvent left;
+	public UnityEvent right;
+	public UnityEvent press;
 
     public enum Touch {
         none,
@@ -18,8 +22,8 @@ public class TouchInput : MonoBehaviour, IDragHandler, IPointerDownHandler, IPoi
         right,
     }
     
-    public Touch touch;
-    public float touchTime;
+    private Touch touch;
+	private float touchTime;
 
     void Update() {
         if (touch == Touch.none)
@@ -82,58 +86,25 @@ public class TouchInput : MonoBehaviour, IDragHandler, IPointerDownHandler, IPoi
     public void OnPointerUp(PointerEventData eventData) {
         if (touchTime < 0.25) {
             switch (touch) {
-                case Touch.up:
-                    swipeUp();
-                    break;
-                case Touch.down:
-                    swipeDown();
-                    break;
-                case Touch.left:
-                    swipeLeft();
-                    break;
-                case Touch.right:
-                    swipeRight();
-                    break;
-                default:
-                    break;
+			case Touch.up:
+				up.Invoke ();
+                break;
+			case Touch.down:
+				down.Invoke ();
+                break;
+			case Touch.left:
+				left.Invoke ();
+                break;
+			case Touch.right:
+				right.Invoke ();
+                break;
+            default:
+                break;
             }
         }
-        if (touch == Touch.press)
-            press();
+		if (touch == Touch.press)
+			press.Invoke ();
         touch = Touch.none;
         touchTime = 0;
-    }
-
-    public void swipeUp()
-    {
-        if (snapscrollBehaviour != null)
-            snapscrollBehaviour.down();
-        Debug.Log("Swipe Up");
-    }
-
-    public void swipeDown()
-    {
-        if (snapscrollBehaviour != null)
-            snapscrollBehaviour.up();
-        Debug.Log("Swipe Down");
-    }
-
-    public void swipeLeft()
-    {
-        if (menuBehaviour != null)
-            menuBehaviour.swipeLeft();
-        Debug.Log("Swipe Left");
-    }
-
-    public void swipeRight()
-    {
-        if (menuBehaviour != null)
-            menuBehaviour.swipeRight();
-        Debug.Log("Swipe Right");
-    }
-
-    public void press()
-    {
-        Debug.Log("Press");
     }
 }
