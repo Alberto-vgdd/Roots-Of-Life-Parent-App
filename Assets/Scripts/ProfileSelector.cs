@@ -4,105 +4,59 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
-public class ProfileSelector : MonoBehaviour {
-    public Text playerName;
-    public Text playerStatus;
-    public Text lastLogin;
-	public GameObject content;
+public class ProfileSelector : MonoBehaviour
+{
+    public GameObject profiles;
+	//public GameObject content;
 	public GameObject profileTemplate;
     public GameObject addButton;
 
-	public UnityEvent onSelectNewProfile;
+	//public UnityEvent onSelectNewProfile;
+    
+    //public float profileWidth;
+    //private bool dragging;
+    //private bool moving;
+    //private bool update;
 
-    public int parentID;
-	public List<Profile> profiles;
-    public float profileWidth;
-    public int selected;
-    private bool dragging;
-    private bool moving;
-    private bool update;
-
-	string URL = "http://62.131.170.46/roots-of-life/userSelect.php";
-    public string[] usersData;
-
-    // Use this for initialization
-    void Start()
+    public void displayUsers()
     {
+        RectTransform rt = profiles.GetComponent<RectTransform>();
 
-    }
-
-    public void unloadUsers()
-    {
-        foreach (Profile p in profiles)
+        // Make sure there is at least one user to display
+        if (AppData.profiles.Count >= 1)
         {
-            Destroy(p.image);
-        }
-        playerName.text = "No users found";
-        playerStatus.text = "Status:";
-    }
+            // Change size of profiles object to accomodate all profile images
+            rt.sizeDelta = new Vector2(700f * (1 + AppData.profiles.Count), 640);
+            rt.anchoredPosition = new Vector2(1080, 0);
 
-    public void loadUsers()
-    {
-        StartCoroutine(userForm());
-    }
-
-    public IEnumerator userForm()
-    {
-        addButton.SetActive(false);
-
-        WWWForm form = new WWWForm();
-        form.AddField("setParentID", parentID);
-
-        WWW www = new WWW(URL, form);
-        yield return www;
-        if (!string.IsNullOrEmpty(www.error))
-        {
-            Debug.Log("error: " + www.error);
-        }
-        else
-        {
-            Debug.Log("result: " + www.text);
-        }
-        
-        profiles = new List<Profile>();
-
-        if (www.text != "")
-        {
-            string usersDataString = www.text.TrimEnd(';');
-            usersData = usersDataString.Split(';');
-            foreach (string data in usersData)
+            // Place each image
+            for (int i = 0; i < AppData.profiles.Count; i++)
             {
-                string name = data.Split(',')[0];
-                int lastlogin = int.Parse(data.Split(',')[2]);
                 Image image = Instantiate(profileTemplate).GetComponent<Image>();
-                image.transform.SetParent(content.transform, false);
-                Profile p = new Profile(name, image, lastlogin);
-                if (data.Split(',')[1] == "1")
-                    p.active = true;
-                profiles.Add(p);
+                image.transform.SetParent(profiles.transform, false);
+                image.rectTransform.anchorMin = new Vector2(0f, 0.5f);
+                image.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+                image.rectTransform.anchoredPosition = new Vector2(320f + (i * 700f), 0);
+                StartCoroutine(AppData.profiles[i].getImage(image));
             }
-            profileWidth = 1f / profiles.Count;
-            selected = 0;
-            displayUsers();
-        }
-        else
-        {
-            addButton.SetActive(true);
+
+            // Place add button at the end
+            addButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(AppData.profiles.Count * 700f + 320f, 0);
         }
     }
 
-    void displayUsers()
+
+    /*void displayUsers()
     {
-        float contentwidth = 1080 + (660 * (profiles.Count - 1));
+        float contentwidth = 1080 + (660 * (AppData.profiles.Count - 1));
         content.GetComponent<RectTransform>().sizeDelta = new Vector2(contentwidth, 660);
-        for (int i = 0; i < profiles.Count; i++)
+        for (int i = 0; i < AppData.profiles.Count; i++)
         {
-            Profile p = profiles[i];
+            Profile p = AppData.profiles[i];
             p.image.rectTransform.anchoredPosition = new Vector2(660 * i - ((contentwidth - 1080) * 0.5f), 0);
         }
-
-        setProfile(profiles.Count / 2);
     }
 
     // Update is called once per frame
@@ -126,7 +80,7 @@ public class ProfileSelector : MonoBehaviour {
     private void animate()
     {
         float v = GetComponent<ScrollRectEx>().horizontalScrollbar.value;
-        float t = getTarget(selected);
+        float t = getTarget(AppData.selected);
         if (v > t)
         {
             float next = v - (Time.deltaTime * 5);
@@ -162,11 +116,11 @@ public class ProfileSelector : MonoBehaviour {
         }
 
         // update selected profile if view was open on a different profile than the currently selected profile
-        if (selection != selected)
+        if (selection != AppData.selected)
             setProfile(selection);
 
         // move view to make sure current profile is shown in the exact center
-        if (v != getTarget(selected))
+        if (v != getTarget(AppData.selected))
             moving = true;
     }
 
@@ -174,9 +128,9 @@ public class ProfileSelector : MonoBehaviour {
 	// gets called every time the slider is changed, only call it when the user is actually updated
     public void setProfile(int profile)
     {
-        selected = profile;
-        playerName.text = profiles[selected].name;
-        if (profiles[selected].active)
+        AppData.selected = profile;
+        playerName.text = AppData.profiles[AppData.selected].name;
+        if (AppData.profiles[AppData.selected].active)
         {
             playerStatus.text = "Status: Playing";
             lastLogin.text = "Logged in:";
@@ -186,30 +140,16 @@ public class ProfileSelector : MonoBehaviour {
             playerStatus.text = "Status: Offline";
             lastLogin.text = "Last seen:";
         }
-        lastLogin.transform.GetChild(0).GetComponent<Text>().text = getTimeString(profiles[selected].lastlogin);
+        lastLogin.transform.GetChild(0).GetComponent<Text>().text = getTimeString(AppData.profiles[AppData.selected].lastlogin);
         onSelectNewProfile.Invoke ();
     }
-
-    private string getTimeString(int unixTime)
-    {
-        DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-        time = time.AddSeconds(unixTime).ToLocalTime();
-        Debug.Log(time.ToString());
-        return time.ToString().Split(' ')[1] + "\n" + time.ToString().Split(' ')[0];
-    }
-
-	// Return the profile instance of the selected user
-	public Profile getSelected() 
-	{
-		return profiles [selected];
-	}
 
 	// Find the location on the scrollbar to display the given user
     private float getTarget(int account)
     {
-		if (account > profiles.Count)
+		if (account > AppData.profiles.Count)
             return -1;
-		return account * (1f / (profiles.Count - 1));
+		return account * (1f / (AppData.profiles.Count - 1));
     }
 
     public void startDrag()
@@ -221,5 +161,5 @@ public class ProfileSelector : MonoBehaviour {
     {
         dragging = false;
         update = true;
-    }
+    }*/
 }

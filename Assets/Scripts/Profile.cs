@@ -4,18 +4,22 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Profile : Object {
-    public string name;
+    public string profileName;
     public bool active = false;
-    public Image image;
     public int lastlogin;
+    public string imageURL;
 
-	public Profile(string name, Image image, int lastlogin)
+    public Profile(string name, int lastlogin, string imageURL)
     {
-        this.name = name;
-        this.image = image;
-        this.image.name = name;
-        this.image.rectTransform.anchoredPosition = new Vector2(0, 0);
+        this.profileName = name;
         this.lastlogin = lastlogin;
+        this.imageURL = imageURL;
     }
 
+    public IEnumerator getImage(Image image)
+    {
+        WWW www = new WWW(imageURL);
+        yield return www;
+        image.sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
+    }
 }

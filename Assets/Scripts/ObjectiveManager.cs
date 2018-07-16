@@ -84,7 +84,7 @@ public class ObjectiveManager : MonoBehaviour {
 	{
 		WWWForm form = new WWWForm();
 		form.AddField ("setObjective", taskNameInput.text);
-		form.AddField ("setUser", selector.profiles [selector.selected].name);
+		form.AddField ("setUser", AppData.getChild().profileName);
 		form.AddField ("setReward", rewardInput.value);
 
 		WWW www = new WWW(URL, form);
