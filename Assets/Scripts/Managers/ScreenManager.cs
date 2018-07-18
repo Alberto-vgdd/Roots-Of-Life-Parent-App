@@ -9,6 +9,7 @@ public class ScreenManager : MonoBehaviour
     public static ScreenManager main;
 
     // Inspector input
+    // Screens
     public ScreenBehaviour settingsScreen;
     public ScreenBehaviour introScreen;
     public ScreenBehaviour tutorialScreen;
@@ -16,10 +17,14 @@ public class ScreenManager : MonoBehaviour
     public ScreenBehaviour loginScreen;
     public ScreenBehaviour quizScreen;
 
+    // Menu
+    public GameObject puzzles;
+
     public GameObject popupField;
 
     // List to store screens and easily access them
     private List<ScreenBehaviour> screens;
+    private List<GameObject> menus;
 
 	// Use this for initialization
 	void Start () {
@@ -32,6 +37,9 @@ public class ScreenManager : MonoBehaviour
         screens.Add(addUserScreen);
         screens.Add(loginScreen);
         screens.Add(quizScreen);
+
+        menus = new List<GameObject>();
+        menus.Add(puzzles);
     }
 
     // Instance calls to static function (used to call methods from events)
@@ -148,5 +156,46 @@ public class ScreenManager : MonoBehaviour
         yield return new WaitForSeconds(3);
         main.popupField.SetActive(false);
         main.popupField.GetComponentInChildren<Text>().text = "Popup Text";
+    }
+
+    public void setMenu(string menu)
+    {
+        StartCoroutine(switchMenu(menu));
+    }
+
+    IEnumerator switchMenu(string menu)
+    {
+        foreach (GameObject m in menus)
+        {
+            Image i = m.GetComponent<Image>();
+            i.CrossFadeAlpha(0.0f, 0.16f, false);
+            foreach (Image im in m.GetComponentsInChildren<Image>())
+                im.CrossFadeAlpha(0.0f, 0.16f, false);
+            foreach (Text t in m.GetComponentsInChildren<Text>())
+                t.CrossFadeAlpha(0.0f, 0.16f, false);
+        }
+
+        yield return new WaitForSeconds(0.33f);
+
+        foreach (GameObject m in menus)
+            m.SetActive(false);
+
+        if (menu == "puzzles")
+        {
+            puzzles.SetActive(true);
+
+            puzzles.GetComponent<Image>().CrossFadeAlpha(0.0f, 0.0f, false);
+            foreach (Image im in puzzles.GetComponentsInChildren<Image>())
+                im.CrossFadeAlpha(0.0f, 0.0f, false);
+            foreach (Text t in puzzles.GetComponentsInChildren<Text>())
+                t.CrossFadeAlpha(0.0f, 0.0f, false);
+
+            puzzles.GetComponent<Image>().CrossFadeAlpha(1.0f, 0.16f, false);
+
+            foreach (Image im in puzzles.GetComponentsInChildren<Image>())
+                im.CrossFadeAlpha(1.0f, 0.16f, false);
+            foreach (Text t in puzzles.GetComponentsInChildren<Text>())
+                t.CrossFadeAlpha(1.0f, 0.16f, false);
+        }
     }
 }
