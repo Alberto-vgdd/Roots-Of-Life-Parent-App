@@ -3,22 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class IntroSequence : MonoBehaviour {
+public class IntroScreen : ScreenBehaviourExecute
+{
     public Text text;
     public List<string> messages;
     private int currentMessage;
 
-	// Use this for initialization
-	void Start () {
+    override public void OnShow()
+    {
         reset();
-        if (PlayerPrefs.GetInt("skipIntro") == 1)
-            gameObject.SetActive(false);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    }
 
     private void reset()
     {

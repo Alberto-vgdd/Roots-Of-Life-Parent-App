@@ -37,7 +37,7 @@ public class ObjectiveLoading : MonoBehaviour {
 		objectives = new List<Transform> ();
 
 		WWWForm form = new WWWForm ();
-		form.AddField ("setUser", AppData.getChild().profileName);
+		form.AddField ("setUser", AppData.getChild().profilename);
 
 		WWW www = new WWW (loadURL, form);
 		yield return www;
@@ -111,7 +111,7 @@ public class ObjectiveLoading : MonoBehaviour {
 	IEnumerator form(Transform objective)
 	{
 		WWWForm form = new WWWForm ();
-		form.AddField ("setUser", AppData.getChild().profileName);
+		form.AddField ("setUser", AppData.getChild().profilename);
 		string objectivestring = objective.GetChild (2).GetComponent<Text>().text;
 		Debug.Log (objectivestring);
 		form.AddField ("setObjective", objectivestring);

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SlideImageBehaviour : MonoBehaviour {
-	public LockscreenBehaviour lockscreen;
+	public SlideScreen slideScreen;
 	public Image image;
 	public Text text;
 	private bool loopup = false;
@@ -17,7 +17,7 @@ public class SlideImageBehaviour : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		float s = lockscreen.scroll * 2;
+		float s = slideScreen.scroll * 2;
 		float b = Mathf.Lerp (1.0f, 0.0f, s);
 		float c = Mathf.Lerp (0.5f, 0.0f, s);
 		float a = Mathf.Lerp (b, c, range);
@@ -34,7 +34,7 @@ public class SlideImageBehaviour : MonoBehaviour {
 	}
 
 	public void calc() {
-		float a = 1 - (lockscreen.scroll * 2);
+		float a = 1 - (slideScreen.scroll * 2);
 		image.CrossFadeAlpha (a, 0.0f, true);
 		text.CrossFadeAlpha (a, 0.0f, true);
 	}

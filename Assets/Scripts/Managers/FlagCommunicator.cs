@@ -10,7 +10,7 @@ public class FlagCommunicator : MonoBehaviour {
 	IEnumerator form(int value)
     {
         WWWForm form = new WWWForm();
-        form.AddField("username", AppData.getChild().profileName);
+        form.AddField("username", AppData.getChild().profilename);
         form.AddField("flagName", flag);
 		form.AddField ("flagValue", value);
 

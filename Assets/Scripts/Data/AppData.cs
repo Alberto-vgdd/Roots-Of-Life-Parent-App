@@ -13,18 +13,10 @@ public class AppData : MonoBehaviour {
     public static List<Profile> profiles;
     public static int selected = 0;
 
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
     public static Profile getChild()
     {
+        if (selected >= profiles.Count)
+            return null;
         return profiles[selected];
     }
 }

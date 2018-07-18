@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class LockscreenBehaviour : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler {
+public class SlideScreen : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler {
 
-	public PlayerinfoBehaviour playerInfo;
+	public PlayerInfo playerInfo;
 	public SlideImageBehaviour slideImage;
 
 	[Range(1.0f, 10.0f)]

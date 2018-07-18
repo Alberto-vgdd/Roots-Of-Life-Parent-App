@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AddUser : MonoBehaviour
+public class AddUserScreen : ScreenBehaviour
 {
     string URL = "http://62.131.170.46/roots-of-life/insertUser.php";
 
@@ -28,6 +28,6 @@ public class AddUser : MonoBehaviour
         yield return www;
 
         // Reload users
-        GameObject.Find("ProfileManager").GetComponent<ProfileManager>().loadUsers();
+        ProfileManager.loadUsers();
     }
 }

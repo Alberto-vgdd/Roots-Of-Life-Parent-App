@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoginManager : MonoBehaviour {
+public class LoginManager : MonoBehaviour
+{
+    // Used to make static references to instance
+    public LoginManager main;
 
-    // PHP urls
-    private static string loginURL = "http://62.131.170.46/roots-of-life/loginRequest.php";
-    private static string registerURL = "http://62.131.170.46/roots-of-life/insertParent.php";
-
-    // Set up references to the UI objects
-    public GameObject loginScreen;
+    // Inspector input
     public InputField nameInput;
     public InputField passInput;
     public InputField passControl;
@@ -20,46 +18,57 @@ public class LoginManager : MonoBehaviour {
     // Variables used for login request
     private string username;
     private string password;
-    
+
+    // PHP urls
+    private static string loginURL = "http://62.131.170.46/roots-of-life/loginRequest.php";
+    private static string registerURL = "http://62.131.170.46/roots-of-life/insertParent.php";
+
     // Use this for initialization
     void Start () {
-        AppData.loggedIn = false;
-
-        // Check if username is to be remembered
+        
+        // Check if username should be remembered
         if (PlayerPrefs.GetInt("remember") == 1)
         {
             rememberToggle.isOn = true;
             username = PlayerPrefs.GetString("username");
-            GameObject.Find("NameInput").GetComponent<InputField>().text = username;
+            nameInput.text = username;
         }
 
-        // Check if user is to be logged inautomatically
+        // Check if user should be logged inautomatically
         if (PlayerPrefs.GetInt("automatic") == 1)
         {
             password = PlayerPrefs.GetString("password");
             automaticToggle.isOn = true;
             StartCoroutine(loginRequest());
         }
-	}
+        
+        // If user is not logged in, show login screen
+        if (!AppData.loggedIn)
+            ScreenManager.showScreen("login");
+    }
     
-    // Create WWW form to process login
+    // WWW form used to process login request
     public IEnumerator loginRequest()
     {
+        // Set up form
         WWWForm form = new WWWForm();
         form.AddField("setUsername", username);
         form.AddField("setPassword", password);
-
         WWW www = new WWW(loginURL, form);
+
+        // Execute form and store result
         yield return www;
         int result;
         if (!string.IsNullOrEmpty(www.error))
             yield break;
         else
             result = int.Parse(www.text);
-        yield return result;
 
+        // result represents the result of the login request. if succesful, it returns the value of the parent ID
+        // (and thus result is equal to a value higher than 0)
         if (result > 0)
         {
+            // Store new settings for remembering
             if (rememberToggle.isOn)
             {
                 PlayerPrefs.SetInt("remember", 1);
@@ -69,6 +78,8 @@ public class LoginManager : MonoBehaviour {
             {
                 PlayerPrefs.SetInt("remember", 0);
                 PlayerPrefs.SetString("username", "");
+                nameInput.text = "";
+                username = "";
             }
             if (automaticToggle.isOn)
             {
@@ -79,46 +90,53 @@ public class LoginManager : MonoBehaviour {
             {
                 PlayerPrefs.SetInt("automatic", 0);
                 PlayerPrefs.SetString("password", "");
+                passInput.text = "";
+                password = "";
             }
-            
+
+            // Store result in app data
             AppData.parentID = result;
             AppData.loggedIn = true;
-            GameObject.Find("ProfileManager").GetComponent<ProfileManager>().loadUsers();
+
+            // Check if user needs to see intro or tutorial
+            if (PlayerPrefs.GetInt("skipIntro") == 0)
+                ScreenManager.showScreen("intro");
+            if (PlayerPrefs.GetInt("skipTutorial") == 0)
+                ScreenManager.showScreen("tutorial");
+            else
+                ProfileManager.loadUsers();
 
             // Disable login manager
-            loginScreen.SetActive(false);
+            ScreenManager.clearScreen();
+
+        // A result value of -1 means the account was found but the password was wrong
         } else if (result == -1)
-            GameObject.Find("PopupManager").GetComponent<PopupBehaviour>().Popup("Wrong password.");
+            ScreenManager.Popup("Wrong password.");
+        // A result value of -2 means the account was not found
         else if (result == -2)
-            GameObject.Find("PopupManager").GetComponent<PopupBehaviour>().Popup("Account not found, please register.");
+            ScreenManager.Popup("Account not found, please register.");
     }
 
-    // Create WWW form to insert parent
+    // WWW form used to insert new parent in the database
     public IEnumerator registerParent()
     {
+        // Set up form
         WWWForm form = new WWWForm();
         form.AddField("setUsername", username);
         form.AddField("setPassword", password);
-
         WWW www = new WWW(registerURL, form);
+
+        // Execute form
         yield return www;
-        if (!string.IsNullOrEmpty(www.error))
-        {
-            Debug.Log("error: " + www.error);
-        }
-        else
-        {
-            Debug.Log("result: " + www.text);
-        }
     }
 
     // Handle logout request
     public void logOut()
     {
-        GameObject.Find("ProfileManager").GetComponent<ProfileManager>().unloadUsers();
+        ProfileManager.unloadUsers();
         AppData.parentID = -1;
         AppData.loggedIn = false;
-        loginScreen.SetActive(true);
+        ScreenManager.showScreen("login");
     }
 
     // Handle login request
@@ -139,11 +157,11 @@ public class LoginManager : MonoBehaviour {
     {
         if (passInput.text != passControl.text)
         {
-            GameObject.Find("PopupManager").GetComponent<PopupBehaviour>().Popup("Your passwords do not match.");
+            ScreenManager.Popup("Your passwords do not match.");
             return;
         }
 
-        GameObject.Find("PopupManager").GetComponent<PopupBehaviour>().Popup("Account created, you are now logged in.");
+        ScreenManager.Popup("Account created, you are now logged in.");
         StartCoroutine(registerParent());
         StartCoroutine(loginRequest());
 
