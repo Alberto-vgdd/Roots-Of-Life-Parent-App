@@ -17,14 +17,10 @@ public class ScreenManager : MonoBehaviour
     public ScreenBehaviour loginScreen;
     public ScreenBehaviour quizScreen;
 
-    // Menu
-    public GameObject puzzles;
-
     public GameObject popupField;
 
     // List to store screens and easily access them
     private List<ScreenBehaviour> screens;
-    private List<GameObject> menus;
 
 	// Use this for initialization
 	void Start () {
@@ -37,9 +33,6 @@ public class ScreenManager : MonoBehaviour
         screens.Add(addUserScreen);
         screens.Add(loginScreen);
         screens.Add(quizScreen);
-
-        menus = new List<GameObject>();
-        menus.Add(puzzles);
     }
 
     // Instance calls to static function (used to call methods from events)
@@ -50,13 +43,13 @@ public class ScreenManager : MonoBehaviour
     // Set screen specified by string
     public static void showScreen(string screen)
     {
-        setScreen(convertString(screen));
+        setScreen(convertScreen(screen));
     }
 
     // Toggle screen on or off
     public static void toggleScreen(string screen)
     {
-        int i = convertString(screen);
+        int i = convertScreen(screen);
         if (i == -1)
             return;
 
@@ -92,8 +85,6 @@ public class ScreenManager : MonoBehaviour
         {
             quiz = (i - 500);
             i = 5;
-
-            Debug.Log("i: " + i + ", quiz: " + quiz);
         }
 
         // Clear screen
@@ -108,7 +99,7 @@ public class ScreenManager : MonoBehaviour
     }
 
     // Convert a string input for a screen into the corresponding index number
-    private static int convertString(string screen)
+    private static int convertScreen(string screen)
     {
         if (screen == "settings")
             return 0;
@@ -125,8 +116,12 @@ public class ScreenManager : MonoBehaviour
         // Example: quiz01, quiz69, quiz55
         if (screen.StartsWith("quiz"))
         {
+			// Check if a number was given and otherwise send no extra data
+			if (screen.Length == 4)
+				return 5;
+			
             // Make sure a two digit number is given after the string
-            if (screen.Length == 4 || screen.Length > 6)
+            if (screen.Length > 6)
                 return -1;
 
             // Store digits behind the string
@@ -158,44 +153,4 @@ public class ScreenManager : MonoBehaviour
         main.popupField.GetComponentInChildren<Text>().text = "Popup Text";
     }
 
-    public void setMenu(string menu)
-    {
-        StartCoroutine(switchMenu(menu));
-    }
-
-    IEnumerator switchMenu(string menu)
-    {
-        foreach (GameObject m in menus)
-        {
-            Image i = m.GetComponent<Image>();
-            i.CrossFadeAlpha(0.0f, 0.16f, false);
-            foreach (Image im in m.GetComponentsInChildren<Image>())
-                im.CrossFadeAlpha(0.0f, 0.16f, false);
-            foreach (Text t in m.GetComponentsInChildren<Text>())
-                t.CrossFadeAlpha(0.0f, 0.16f, false);
-        }
-
-        yield return new WaitForSeconds(0.33f);
-
-        foreach (GameObject m in menus)
-            m.SetActive(false);
-
-        if (menu == "puzzles")
-        {
-            puzzles.SetActive(true);
-
-            puzzles.GetComponent<Image>().CrossFadeAlpha(0.0f, 0.0f, false);
-            foreach (Image im in puzzles.GetComponentsInChildren<Image>())
-                im.CrossFadeAlpha(0.0f, 0.0f, false);
-            foreach (Text t in puzzles.GetComponentsInChildren<Text>())
-                t.CrossFadeAlpha(0.0f, 0.0f, false);
-
-            puzzles.GetComponent<Image>().CrossFadeAlpha(1.0f, 0.16f, false);
-
-            foreach (Image im in puzzles.GetComponentsInChildren<Image>())
-                im.CrossFadeAlpha(1.0f, 0.16f, false);
-            foreach (Text t in puzzles.GetComponentsInChildren<Text>())
-                t.CrossFadeAlpha(1.0f, 0.16f, false);
-        }
-    }
 }

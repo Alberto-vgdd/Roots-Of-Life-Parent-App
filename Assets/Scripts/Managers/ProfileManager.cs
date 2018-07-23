@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class ProfileManager : MonoBehaviour
 {
@@ -15,9 +16,11 @@ public class ProfileManager : MonoBehaviour
     public Text playerStatus;
     public Text lastLogin;
 
+	public UnityEvent onSelect;
+
     private float reloadTimer = 0.0f;
-    private static string loadURL = "http://62.131.170.46/roots-of-life/userSelect.php";
-    private static string deleteURL = "http://62.131.170.46/roots-of-life/deleteUser.php";
+    private static string loadURL = "http://62.131.170.46/roots-of-life/profileSelect.php";
+    private static string deleteURL = "http://62.131.170.46/roots-of-life/profileDelete.php";
     private bool setup = true;
 
     void Start()
@@ -54,6 +57,7 @@ public class ProfileManager : MonoBehaviour
         main.playerName.text = "No users found";
         main.playerStatus.text = "Status:";
         main.lastLogin.text = "";
+		main.setup = true;
     }
 
     public static void deleteCurrent()
@@ -146,6 +150,10 @@ public class ProfileManager : MonoBehaviour
         }
 
         main.profileSelector.updateX();
+
+		// Invoke onselect method if add screen wasn't selected
+		if (profN != AppData.profiles.Count)
+			main.onSelect.Invoke ();
     }
 
     private static string getTimeString(int unixTime)

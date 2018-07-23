@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class AddUserScreen : ScreenBehaviour
 {
-    string URL = "http://62.131.170.46/roots-of-life/insertUser.php";
+    string URL = "http://62.131.170.46/roots-of-life/profileInsert.php";
 
     public InputField nameInput;
 

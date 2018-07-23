@@ -21,7 +21,7 @@ public class LoginManager : MonoBehaviour
 
     // PHP urls
     private static string loginURL = "http://62.131.170.46/roots-of-life/loginRequest.php";
-    private static string registerURL = "http://62.131.170.46/roots-of-life/insertParent.php";
+    private static string registerURL = "http://62.131.170.46/roots-of-life/parentInsert.php";
 
     // Use this for initialization
     void Start () {
@@ -99,12 +99,10 @@ public class LoginManager : MonoBehaviour
             AppData.loggedIn = true;
 
             // Check if user needs to see intro or tutorial
-            if (PlayerPrefs.GetInt("skipIntro") == 0)
-                ScreenManager.showScreen("intro");
-            if (PlayerPrefs.GetInt("skipTutorial") == 0)
-                ScreenManager.showScreen("tutorial");
-            else
-                ProfileManager.loadUsers();
+			if (PlayerPrefs.GetInt ("skipIntro") == 0) 
+				ScreenManager.showScreen ("intro");
+			else 
+				ProfileManager.loadUsers ();
 
             // Disable login manager
             ScreenManager.clearScreen();
