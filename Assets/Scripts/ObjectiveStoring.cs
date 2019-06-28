@@ -40,7 +40,7 @@ public class ObjectiveStoring : MonoBehaviour {
 	{
 		WWWForm form = new WWWForm();
 		form.AddField ("setObjective", textfield.text);
-		form.AddField ("setUser", selector.profiles [selector.selected].name);
+		form.AddField ("setUser", AppData.getChild().profilename);
 		form.AddField ("setReward", getRewardInput().value);
 
 		WWW www = new WWW(URL, form);

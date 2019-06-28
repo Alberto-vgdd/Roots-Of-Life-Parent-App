@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class ChapterBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler {
-    public GameObject content;
-	public State state = State.closed;
+public class ChapterBehaviour : MonoBehaviour {
+
+	// Inspector input
 	public Image chapterMask;
 	public ChapterBehaviour nextChapter;
-	public ScrollRect parent;
+
+	public State state = State.closed;
 
 	public static float openTime = 0.3f;
 	public float t = 0.0f;
@@ -28,7 +29,6 @@ public class ChapterBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 	// Use this for initialization
 	void Start () {
 		chapters.Add (this);
-		RectTransform rT = GetComponent<RectTransform> ();
 		opensize = chapterMask.GetComponent<RectTransform> ().sizeDelta.y + 100;
 	}
 	
@@ -91,7 +91,6 @@ public class ChapterBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             state = State.open;
         else if (state == State.closing)
             state = State.closed;
-        content.GetComponent<ContentExpander>().updateSize();
     }
 
 	public void onClick() {
@@ -111,18 +110,5 @@ public class ChapterBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 	private void close() {
 		if (state == State.open || state == State.opening) 
 			state = State.closing;
-	}
-
-	public void OnPointerDown(PointerEventData eventData) {
-		parent.OnBeginDrag (eventData);
-	}
-
-	public void OnPointerUp(PointerEventData eventData) {
-		parent.OnEndDrag(eventData);
-	}
-
-	public void OnDrag(PointerEventData eventData) {
-		parent.OnDrag (eventData);
-		drag = true;
 	}
 }
